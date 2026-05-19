@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF2DATEV (Kontoauszüge)</title>
+<title>Bank2DATEV</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230c1410'/><text x='16' y='23' font-family='Georgia,serif' font-size='22' font-weight='700' fill='%235d9e7a' text-anchor='middle'>g</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -30,11 +30,11 @@
   }
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-feature-settings:"ss01";}
 body{
   background:var(--bg);color:var(--text);
   font-family:'IBM Plex Sans',sans-serif;font-weight:300;
-  min-height:100vh;padding:40px 20px 80px;
+  font-feature-settings:"ss01";
+  min-height:100vh;padding:70px 20px 80px;
   transition:background .25s,color .25s;
 }
 body::before{
@@ -68,7 +68,14 @@ h2{
   font-size:clamp(18px,3vw,26px);font-weight:600;
   color:var(--text);margin-bottom:8px;
 }
-.subtitle{font-size:12px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;letter-spacing:0.5px;}
+.subtitle{font-size:12px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;letter-spacing:0.5px;max-width:100%;overflow-wrap:break-word;}
+.hdr-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px;max-width:100%;}
+.part-of{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;
+  color:var(--text-muted);text-decoration:none;
+  border:1px solid var(--border);padding:3px 10px;transition:all .2s;
+}
+.part-of:hover{color:var(--accent);border-color:var(--accent);}
 .badge{
   display:inline-block;font-family:'IBM Plex Mono',monospace;
   font-size:10px;letter-spacing:3px;text-transform:uppercase;
@@ -77,6 +84,15 @@ h2{
 .card-title{
   font-family:'IBM Plex Mono',monospace;font-size:10px;
   letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;
+}
+.card-title-row{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+}
+@media(max-width:640px){
+  .card-title-row{flex-direction:column;align-items:stretch;}
+  .card-title-row > div{display:flex;gap:8px;flex-wrap:wrap;}
+  .card-title-row > div > *{flex:1;min-width:0;}
+  .card-title-row .btn-sec{padding:10px 8px;font-size:9px;letter-spacing:1px;}
 }
 .hint{font-size:10px;color:var(--text-muted);margin-top:5px;font-family:'IBM Plex Mono',monospace;line-height:1.5;}
 .disclaimer{
@@ -96,6 +112,10 @@ footer{
 .card{
   background:var(--surface);border:1px solid var(--border);
   border-left:3px solid var(--accent);padding:28px 32px;margin-bottom:20px;
+}
+@media(max-width:640px){
+  body{padding:70px 12px 60px;}
+  .card{padding:20px 16px;}
 }
 label span.lbl{
   font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;
@@ -226,15 +246,18 @@ td.del-col button:hover{color:#e07a7a;}
 
   <!-- HEADER -->
   <header style="text-align:center;margin-bottom:40px;">
-    <h1><span>PDF2DATEV</span> Kontoauszüge</h1>
-    <p class="subtitle">PDF-Kontoauszug einlesen · Buchungszeilen prüfen · DATEV-Buchungsstapel exportieren</p>
+    <h1><span>Bank</span>2DATEV</h1>
+    <div class="hdr-row">
+      <p class="subtitle">PDF-Kontoauszug einlesen · Buchungszeilen prüfen · DATEV-Buchungsstapel exportieren</p>
+      <a class="part-of" href="https://rglowania.github.io/gtools/">Part of gTools ↗</a>
+    </div>
   </header>
 
   <!-- SCHRITT 1: EINSTELLUNGEN -->
   <div class="card">
-    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+    <div class="card-title card-title-row">
       <span>1 · Mandant & DATEV-Einstellungen</span>
-      <div style="display:flex;gap:8px;">
+      <div>
         <button class="btn-sec" onclick="exportStammdaten()" title="Stammdaten als Datei exportieren">💾 Als Datei exportieren</button>
         <label style="margin:0;display:inline-flex;">
           <span class="btn-sec" style="cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;"><span style="line-height:1;">🕹️</span>Importieren</span>
@@ -311,8 +334,8 @@ td.del-col button:hover{color:#e07a7a;}
     <div id="result-section">
       <div style="display:flex;justify-content:space-between;align-items:center;margin:20px 0 12px;">
         <div class="tabs" style="margin-bottom:0;border:none;">
-          <button class="tab-btn active" onclick="switchTab('buchungen')">Buchungszeilen</button>
-          <button class="tab-btn" onclick="switchTab('rohtext')">Rohtext</button>
+          <button class="tab-btn active" onclick="switchTab('buchungen',this)">Buchungszeilen</button>
+          <button class="tab-btn" onclick="switchTab('rohtext',this)">Rohtext</button>
         </div>
         <div style="display:flex;gap:8px;">
           <button class="btn-sec" onclick="addRow()">+ Zeile</button>
@@ -365,7 +388,7 @@ td.del-col button:hover{color:#e07a7a;}
       <button class="btn-primary" onclick="exportDatev()" style="flex:1;min-width:200px;">
         DATEV Buchungsstapel exportieren
       </button>
-      <button class="btn-sec" onclick="exportCsvSimple()">Einfache CSV</button>
+      <button class="btn-sec" onclick="exportXlsx()">Excel-Export</button>
     </div>
     <p class="hint" style="margin-top:12px;">
       Export erzeugt EXTF-Format (DATEV Buchungsstapel v700) · direkt importierbar in DATEV Kanzlei-Rechnungswesen & Unternehmen online
@@ -377,9 +400,10 @@ td.del-col button:hover{color:#e07a7a;}
   </p>
 </div>
 
-<footer>© Robin Glowania · Zuletzt aktualisiert: 07.05.2026</footer>
+<footer>© Robin Glowania · Zuletzt aktualisiert: 19.05.2026</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 /* ── Wirtschaftsjahr auf aktuelles Jahr ─────────────────────── */
 document.getElementById('wj-beginn').value = new Date().getFullYear();
@@ -391,6 +415,8 @@ document.getElementById('wj-beginn').value = new Date().getFullYear();
     if(sd.berater) document.getElementById('berater-nr').value=sd.berater;
     if(sd.mandant) document.getElementById('mandant-nr').value=sd.mandant;
     if(sd.konto) document.getElementById('konto-bank').value=sd.konto;
+    if(sd.gegen!==undefined) document.getElementById('konto-gegen').value=sd.gegen;
+    if(sd.prefix!==undefined) document.getElementById('bu-text-prefix').value=sd.prefix;
     if(sd.kontorahmen) document.getElementById('kontorahmen').value=sd.kontorahmen;
     if(sd.waehrung) document.getElementById('waehrung').value=sd.waehrung;
   }catch(e){}
@@ -401,6 +427,8 @@ function getStammdaten(){
     berater:document.getElementById('berater-nr').value,
     mandant:document.getElementById('mandant-nr').value,
     konto:document.getElementById('konto-bank').value,
+    gegen:document.getElementById('konto-gegen').value,
+    prefix:document.getElementById('bu-text-prefix').value,
     kontorahmen:document.getElementById('kontorahmen').value,
     waehrung:document.getElementById('waehrung').value
   };
@@ -408,7 +436,7 @@ function getStammdaten(){
 function saveStammdatenLocal(){
   try{localStorage.setItem('datev-stammdaten',JSON.stringify(getStammdaten()));}catch(e){}
 }
-['berater-nr','mandant-nr','konto-bank','kontorahmen','waehrung'].forEach(id=>{
+['berater-nr','mandant-nr','konto-bank','konto-gegen','bu-text-prefix','kontorahmen','waehrung'].forEach(id=>{
   document.getElementById(id).addEventListener('change',saveStammdatenLocal);
 });
 document.getElementById('kontorahmen').addEventListener('change',function(){
@@ -434,6 +462,8 @@ function importStammdaten(input){
       if(sd.berater) document.getElementById('berater-nr').value=sd.berater;
       if(sd.mandant) document.getElementById('mandant-nr').value=sd.mandant;
       if(sd.konto) document.getElementById('konto-bank').value=sd.konto;
+      if(sd.gegen!==undefined) document.getElementById('konto-gegen').value=sd.gegen;
+      if(sd.prefix!==undefined) document.getElementById('bu-text-prefix').value=sd.prefix;
       if(sd.kontorahmen) document.getElementById('kontorahmen').value=sd.kontorahmen;
       if(sd.waehrung) document.getElementById('waehrung').value=sd.waehrung;
       saveStammdatenLocal();
@@ -482,11 +512,11 @@ dz.addEventListener('drop',e=>{
 });
 
 /* ── Tabs ───────────────────────────────────────────────────── */
-function switchTab(name){
+function switchTab(name,btn){
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  event.target.classList.add('active');
+  if(btn) btn.classList.add('active');
 }
 
 /* ── Status ─────────────────────────────────────────────────── */
@@ -644,7 +674,6 @@ function parseKontoauszug(text){
 function renderTabelle(){
   const tbody=document.getElementById('buchungs-body');
   tbody.innerHTML='';
-  const prefix=document.getElementById('bu-text-prefix').value||'';
 
   buchungen.forEach((b,i)=>{
     const betragFmt=fmtBetrag(b.betrag);
@@ -926,18 +955,33 @@ function exportDatev(){
   downloadFile(csvContent,'datev_buchungsstapel_'+wj+'.csv','text/csv;charset=utf-8');
 }
 
-/* ── Einfache CSV ───────────────────────────────────────────── */
-function exportCsvSimple(){
+/* ── Excel-Export (SheetJS) ─────────────────────────────────── */
+function exportXlsx(){
   if(buchungen.length===0){alert('Keine Buchungszeilen vorhanden.');return;}
-  const header='Datum;Betrag;Konto;Gegenkonto;BU-Schlüssel;Buchungstext';
-  const rows=buchungen.map(b=>[
-    b.datum,
-    b.betrag.toFixed(2).replace('.',','),
-    b.konto,b.gegenkonto,b.buSchluessel,
-    `"${b.buchungstext.replace(/"/g,'""')}"`
-  ].join(';'));
-  const csv='\uFEFF'+header+'\r\n'+rows.join('\r\n');
-  downloadFile(csv,'kontoauszug.csv','text/csv;charset=utf-8');
+  if(typeof XLSX==='undefined'){alert('SheetJS konnte nicht geladen werden.');return;}
+  const data=[
+    ['Datum','Betrag','Konto','Gegenkonto','BU-Schlüssel','Buchungstext'],
+    ...buchungen.map(b=>[
+      b.datum,
+      b.betrag,
+      b.konto,
+      b.gegenkonto,
+      b.buSchluessel,
+      b.buchungstext
+    ])
+  ];
+  const ws=XLSX.utils.aoa_to_sheet(data);
+  // Spaltenbreiten
+  ws['!cols']=[{wch:12},{wch:12},{wch:8},{wch:10},{wch:8},{wch:50}];
+  // Betrag-Spalte als Zahl mit deutschem Format
+  const range=XLSX.utils.decode_range(ws['!ref']);
+  for(let r=1;r<=range.e.r;r++){
+    const cell=ws[XLSX.utils.encode_cell({r,c:1})];
+    if(cell){cell.t='n';cell.z='#,##0.00';}
+  }
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Buchungen');
+  XLSX.writeFile(wb,'kontoauszug.xlsx');
 }
 
 /* ── Download ───────────────────────────────────────────────── */
